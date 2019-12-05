@@ -110,7 +110,7 @@ public class CustomerRepositoryTests {
         assertThat(mebarki.get(0).getFirstName()).isEqualTo("Omar");//la mise à jour n'est pas prise dans le cache
     }
 
-    /*@Test
+    @Test
     public void testUpdateCachedWithCachePut() {
         final String firstName = "Omar2";
         insertOne();
@@ -118,8 +118,8 @@ public class CustomerRepositoryTests {
         assertThat(mebarki.get(0).getFirstName()).isEqualTo("Omar");
         updateCustomerWithCachePut(6L, firstName);
         mebarki = repository.findByLastName("MEBARKI");
-        assertThat(mebarki.get(0).getFirstName()).isEqualTo(firstName);
-    }*/
+        assertThat(mebarki.get(0).getFirstName()).isEqualTo(firstName); //le cache n'est pas mis à jour
+    }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void createCustomer(String firstName, String lastName) {
@@ -137,7 +137,7 @@ public class CustomerRepositoryTests {
     public void updateCustomerWithCachePut(Long id, String firstName) {
         repository.findById(id).ifPresent(customer -> {
             customer.setFirstName(firstName);
-            repositoryCustom.saveAndCache(customer);
+            repository.save(customer);
         });
     }
 
