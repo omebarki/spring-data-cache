@@ -3,7 +3,6 @@ package omar.mebarki.cache.repository;
 import omar.mebarki.config.AppConfig;
 import omar.mebarki.domain.Customer;
 import omar.mebarki.repository.CustomerRepository;
-import omar.mebarki.repository.CustomerRepository2;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -27,8 +27,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class CustomerRepositoryTests {
     @Autowired
     private CustomerRepository repository;
-    @Autowired
-    CustomerRepository2 repositoryCustom;
     @Autowired
     CacheManager cacheManager;
 
@@ -46,7 +44,6 @@ public class CustomerRepositoryTests {
     @BeforeEach
     public void setUp() {
         repository.deleteAll();
-        cacheManager.getCache(CustomerRepository.BY_LAST_NAME_CACHE).invalidate();
         repository.saveAll(Arrays.asList(CUSTOMERS));
     }
 
@@ -66,8 +63,12 @@ public class CustomerRepositoryTests {
     public void testCacheInsertBeforeSelect() {
         insertOne();
         insertOne();
-        List<Customer> customersCached = repository.findByLastName("MEBARKI");
-        assertThat(customersCached.size()).isEqualTo(2);
+        System.out.println("--------------------------");
+        Optional<Customer> customer = repository.findById(6L);
+        assertThat(customer.isPresent()).isTrue();
+        System.out.println("2--------------------------");
+        customer = repository.findById(6L);
+        System.out.println("--------------------------");
 
     }
 
@@ -110,7 +111,7 @@ public class CustomerRepositoryTests {
         assertThat(mebarki.get(0).getFirstName()).isEqualTo("Omar");//la mise à jour n'est pas prise dans le cache
     }
 
-    /*@Test
+    @Test
     public void testUpdateCachedWithCachePut() {
         final String firstName = "Omar2";
         insertOne();
@@ -119,7 +120,7 @@ public class CustomerRepositoryTests {
         updateCustomerWithCachePut(6L, firstName);
         mebarki = repository.findByLastName("MEBARKI");
         assertThat(mebarki.get(0).getFirstName()).isEqualTo(firstName);
-    }*/
+    }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void createCustomer(String firstName, String lastName) {
@@ -137,7 +138,7 @@ public class CustomerRepositoryTests {
     public void updateCustomerWithCachePut(Long id, String firstName) {
         repository.findById(id).ifPresent(customer -> {
             customer.setFirstName(firstName);
-            repositoryCustom.saveAndCache(customer);
+            repository.save(customer);
         });
     }
 
