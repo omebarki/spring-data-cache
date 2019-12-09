@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.cache.CacheManager;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,9 +26,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class CustomerRepositoryTests {
     @Autowired
     private CustomerRepository repository;
-    @Autowired
-    CacheManager cacheManager;
-
 
     private final int INITIAL_LINES_COUNT = 5;
 
@@ -60,9 +56,10 @@ public class CustomerRepositoryTests {
     }
 
     @Test
-    public void testCacheInsertBeforeSelect() {
+    public void testCacheInsertBeforeSelect() throws InterruptedException {
         insertOne();
         insertOne();
+        Thread.sleep(1000);
         System.out.println("--------------------------");
         Optional<Customer> customer = repository.findById(6L);
         assertThat(customer.isPresent()).isTrue();
@@ -112,7 +109,7 @@ public class CustomerRepositoryTests {
     }
 
     @Test
-    public void testUpdateCachedWithCachePut() {
+    public void testUpdateCachedWithCachePut() throws InterruptedException {
         final String firstName = "Omar2";
         insertOne();
         List<Customer> mebarki = repository.findByLastName("MEBARKI");

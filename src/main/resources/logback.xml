@@ -5,13 +5,13 @@
         </encoder>
     </appender>
 
-    <root level="INFO">
+    <root level="INFO" additivity="false">
         <appender-ref ref="STDOUT"/>
     </root>
-    <logger level="debug" name="org.hibernate.cache">
-        <appender-ref ref="STDOUT" />
+    <logger level="debug" name="org.hibernate.cache" additivity="false">
+        <appender-ref ref="STDOUT"/>
     </logger>
-    <logger level="debug" name="org.ehcache">
-        <appender-ref ref="STDOUT" />
+    <logger level="debug" name="org.ehcache" additivity="false">
+        <appender-ref ref="STDOUT"/>
     </logger>
 </configuration>

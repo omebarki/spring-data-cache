@@ -1,11 +1,24 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE ehcache>
-<ehcache>
-    <diskStore path="java.io.tmpdir"/>
-    <cache name="customer.byId"
-           maxElementsInMemory="10000" eternal="false" timeToIdleSeconds="600"
-           timeToLiveSeconds="3600" overflowToDisk="true"/>
-    <cache name="company.byName"
-           maxElementsInMemory="10000" eternal="false" timeToIdleSeconds="600"
-           timeToLiveSeconds="3600" overflowToDisk="true"/>
-</ehcache
+<!-- https://www.ehcache.org/documentation/3.8/examples.html -->
+<config
+        xmlns:jsr107='http://www.ehcache.org/v3/jsr107'
+        xmlns='http://www.ehcache.org/v3'>
+    <service>
+        <jsr107:defaults enable-management="true"/>
+    </service>
+    <!-- file persistance enabling-->
+    <persistence directory="${java.io.tmpdir}/ehcache"/>
+
+    <!-- the  cache we will create-->
+    <cache alias="omar.mebarki.domain.Customer" uses-template="config-cache">
+        <expiry>
+            <ttl unit="days">2</ttl>
+        </expiry>
+    </cache>
+
+    <!-- the config cache tenplate-->
+    <cache-template name="config-cache">
+        <resources>
+            <heap unit="entries">1000</heap>
+        </resources>
+    </cache-template>
+</config>
